@@ -1,17 +1,24 @@
 <?php
 
+// CORS
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 
+// handle preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit();
 }
 
 include "db.php";
 
-if(!isset($_POST['username']) || !isset($_POST['password'])){
+// ambil data POST
+$username = $_POST['username'] ?? '';
+$password = $_POST['password'] ?? '';
+
+if(!$username || !$password){
     echo json_encode([
         "status"=>"error",
         "message"=>"Data tidak lengkap"
@@ -19,9 +26,7 @@ if(!isset($_POST['username']) || !isset($_POST['password'])){
     exit;
 }
 
-$username = $_POST['username'];
-$password = $_POST['password'];
-
+// query user
 $sql = "SELECT * FROM users WHERE username='$username'";
 $result = $conn->query($sql);
 
